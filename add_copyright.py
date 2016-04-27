@@ -78,10 +78,44 @@ class MasterSMILHandler(BaseHandler):
             self.tag = False
         self.write(escape(str).replace('\n','\r\n'))
 
+class Handler(BaseHandler):
+    
+    def startElement(self, name, attrs):
+        orders = { 'smil' : [],
+                   'head' : [],
+                   'meta' : [ 'name', 'content' ],
+                   'layout' : [],
+                   'region' : [ 'id' ],
+                   'body' : [ ],
+                   'ref' : [ 'src', 'title', 'id' ] }
+        order = orders[name]                           
+        if self.tag:
+            self.write('>')
+            self.tag = False
+        self.write( '<',name, self.do_attr(order,attrs))
+        self.tag = True
+        
+
+    def endElement(self,name):
+        if self.tag:
+            self.write('/>')
+            self.tag = False
+        else:
+            self.write('</',name,'>')            
+        
+
+    def characters(self,str):
+        if self.tag:
+            self.write('>')
+            self.tag = False
+        self.write(escape(str).replace('\n','\r\n'))
+
+        
 
 def update(folder,copyright_mp3file, copyright_duration):
 
-    master = MasterSMILHandler(folder,'master.smil','master.smil.new')
+    MasterSMILHandler(folder,'master.smil','master.smil.new')
+    Ncc:Revision(folder,'ncc.html','ncc.html.new')
 
 
 
