@@ -50,7 +50,7 @@ siml_templ = """<?xml version="1.0" encoding="utf-8"?>
 			<par endsync="last" id="par_notice">
 				<text src="ncc.html#h1_notice" id="txt_notice"/>
 				<seq>
-					<audio src="{mp3}" clip-begin="npt=0.000s" clip-end="npt="{dur}" id="aud_notice"/>
+					<audio src="{mp3}" clip-begin="npt=0.000s" clip-end="npt={dur}s" id="aud_notice"/>
 				</seq>
 			</par>
 		</seq>
@@ -78,6 +78,7 @@ class DaisyBook:
         return os.path.join(self.folder,x)
 
     def parse(self):
+        #self.log('Parsing ' , self.f("master.smil"))
         DOMTree = xml.dom.minidom.parse(self.f("master.smil"))
         self.smil_master = { meta.getAttribute('name') : meta.getAttribute('content') 
                            for meta in DOMTree.documentElement.getElementsByTagName('meta') }        
@@ -85,6 +86,7 @@ class DaisyBook:
                             for ref in DOMTree.documentElement.getElementsByTagName('ref') ]
 
     def parse_smil(self,smil):
+        #self.log('Parsing ' , self.f(smil))        
         dom = xml.dom.minidom.parse(self.f(smil))
         ret = {}
         ret["meta"] = {  meta.getAttribute('name') : meta.getAttribute('content') 
@@ -104,7 +106,8 @@ class DaisyBook:
         return self.smil_refs
             
 
-    def dump(self,pfn):
+    def dump(self):
+        pfn = self.log
         pfn("Book Title   : ",self.title())
         pfn("Book Duration: ",self.duration())
         for f in self.refs():
@@ -133,7 +136,7 @@ class DaisyBook:
         ## First write out the smil's, and copy the mp3's
         ## Updating the ncc:totalElapsedTime
         mp3s = set()
-        time_of_first = self.copyto_smil(0,0,mp3s)    
+        time_of_first = self.copyto_smil(0,0,mp3s)
         for x in range(1,len(self.smil_refs)):
             self.copyto_smil(x,self.todo[2],mp3s)
         for mp3 in sorted(mp3s):
@@ -218,7 +221,7 @@ class DaisyBook:
         et_node.setAttribute('content', et_new)
 
         el_node = self.dom_search(dom,'meta', 'name', 'ncc:timeInThisSmil')
-        el = hms2s( et_node.getAttribute('content'))
+        el = hms2s( el_node.getAttribute('content'))
         
         outfile = os.path.join(self.outfolder, self.smil_refs[idx][0])
         self.log( '     => ',outfile)        

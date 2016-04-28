@@ -179,7 +179,7 @@ def convert( input_dir ,
         logfn("Checking ",root)
         db = DaisyBook(logfn,root)
         if db.is_valid():
-            db.dump(logfn)
+            db.dump()
             after = db.get_smil(0)
             title = db.title()
             outfolder = os.path.join(output_dir,title.replace(' ','-'))
@@ -189,7 +189,12 @@ def convert( input_dir ,
             logfn(" Book will be written to ", outfolder)
             db.insert(1, notice_file, notice_durn)
             db.copyto(outfolder)
-
+            dbc = DaisyBook(logfn,outfolder)
+            logfn("Checking ",root)
+            if not dbc.is_valid():
+                logfn('  ***** FAILED *****')
+            dbc.dump()
+            logfn('And we are done with this ...')
     
 
         
