@@ -12,6 +12,7 @@ import tkFont
 #from ttk import *
 import json
 
+from .convert import convert
 
 config_file = os.path.expanduser("~/.daisytool.json")
     
@@ -145,16 +146,20 @@ class Application(Frame):
         o("  Notice MP3 File  : ",nv)
         o("  Notice Duration  : ",dv)        
 
-
-
-        ## Save before exiting..
-        self.config["lru"].insert(0,{ "input":    iv,
-                                   "output":   ov,
-                                   "notice":   nv,
-                                   "duration": dv})
-        with open(config_file, 'w') as outfile:
-            json.dump(self.config, outfile)
-
+        ok = convert( input_dir = iv,
+                      output_dir = ov,
+                      notice_file = nv,
+                      notice_durn = dv,
+                      logfn = o)
+        if ok :
+            ## Save before exiting..
+            self.config["lru"].insert(0,{ "input":    iv,
+                                          "output":   ov,
+                                          "notice":   nv,
+                                          "duration": dv})
+            with open(config_file, 'w') as outfile:
+                json.dump(self.config, outfile)
+        
 
         
 root = Tk()

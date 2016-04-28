@@ -1,5 +1,6 @@
 #!/usr/bin/env python2
 
+import xml.dom.minidom
 import xml.etree.ElementTree as ET
 import os.path
 
@@ -10,6 +11,9 @@ from xml.sax.handler import ContentHandler,EntityResolver,DTDHandler
 from xml.sax import make_parser
 import sys
 from  xml.sax.saxutils import escape, quoteattr
+import zipfile
+
+from daisy import DaisyBook
 
 
 copyrightsmil = """<?xml version="1.0" encoding="utf-8"?>
@@ -185,14 +189,37 @@ def update(folderin, folderout, copyright_mp3file, copyright_duration,aftersmil)
 
 
 
-update('StoriesForChildren',
-       'In-Start',
-       'Copyright_Notice_Saksham/aud001_Copyright_Notice_English.mp3',
-       61.4,
-       'dtb_0001.smil')
-update('StoriesForChildren',
-       'In-End',
-       'Copyright_Notice_Saksham/aud001_Copyright_Notice_English.mp3',
-       61.4,
-       'dtb_0031.smil')
 
+def convert( input_dir ,
+             output_dir ,
+             notice_file ,
+             notice_durn ,
+             logfn):
+    ## Recurse in input_Dir
+    input_dir = os.path.abspath(input_dir)
+    output_dir = os.path.abspath(output_dir)
+    notice_file = os.path.abspath(notice_file)
+    
+    for root, dir, files in os.walk(input_dir):
+        for f in files:
+            if f == 'master.smil':
+                db = DaisyBook(root)
+                db.dump(logfn)
+                
+
+    
+
+        
+
+if __name__ == "__main__":
+    def log(*args):
+        print ' '.join([str(y) for y in args])
+    if len(sys.argv) != 5:
+        print "Usage: ./convert.py <input_dir> <output_dir> <notice_file> <notice_durn>"
+    else:
+        convert(input_dir = sys.argv[1],
+                output_dir = sys.argv[2],
+                notice_file = sys.argv[3],
+                notice_durn = sys.argv[4],
+                logfn = log)
+        
