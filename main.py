@@ -12,7 +12,7 @@ import tkFont
 #from ttk import *
 import json
 
-from .convert import convert
+from convert import convert
 
 config_file = os.path.expanduser("~/.daisytool.json")
     
@@ -96,7 +96,7 @@ class Application(Frame):
         self.showOutput.grid(row=r,column=0,sticky=W,columnspan=3,padx=3)
         #####
         r  = r + 1
-        self.showOutput = Text(self)
+        self.showOutput = Text(self,width=120)
         self.showOutput.grid(row=r,column=0,columnspan=5,padx=3,pady=3)
         #####
         r  = r + 1

@@ -16,33 +16,6 @@ import zipfile
 from daisy import DaisyBook
 
 
-copyrightsmil = """<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE smil PUBLIC "-//W3C//DTD SMIL 1.0//EN" "http://www.w3.org/TR/REC-smil/SMIL10.dtd">
-<smil>
-	<head>
-		<meta name="dc:identifier" content="EA22"/>
-		<meta name="dc:title" content="{title}"/>
-		<meta name="dc:format" content="Daisy 2.02"/>
-		<meta name="title" content="{title}"/>
-		<meta name="ncc:totalElapsedTime" content="{elapsed}"/>
-		<meta name="ncc:timeInThisSmil" content="{inthis}"/>
-		<meta name="ncc:generator" content="Regenerator 0.6.172"/>
-		<layout>
-			<region id="txtView"/>
-		</layout>
-	</head>
-	<body>
-		<seq dur="{dur}">
-			<par endsync="last" id="par_copyright">
-				<text src="ncc.html#h1_copyright" id="txt_copyright"/>
-				<seq>
-					<audio src="{mp3}" clip-begin="npt=0.000s" clip-end="npt="{dur}" id="aud_copyright"/>
-				</seq>
-			</par>
-		</seq>
-	</body>
-</smil>
-"""
 
 class BaseHandler(ContentHandler,EntityResolver,DTDHandler):
 
@@ -190,6 +163,7 @@ def update(folderin, folderout, copyright_mp3file, copyright_duration,aftersmil)
 
 
 
+
 def convert( input_dir ,
              output_dir ,
              notice_file ,
@@ -199,13 +173,22 @@ def convert( input_dir ,
     input_dir = os.path.abspath(input_dir)
     output_dir = os.path.abspath(output_dir)
     notice_file = os.path.abspath(notice_file)
+    notice_durn = float(notice_durn)
     
     for root, dir, files in os.walk(input_dir):
-        for f in files:
-            if f == 'master.smil':
-                db = DaisyBook(root)
-                db.dump(logfn)
-                
+        logfn("Checking ",root)
+        db = DaisyBook(logfn,root)
+        if db.is_valid():
+            db.dump(logfn)
+            after = db.get_smil(0)
+            title = db.title()
+            outfolder = os.path.join(output_dir,title.replace(' ','-'))
+            logfn("-----------------------------------------------")
+            logfn(" Found book: ",title)
+            logfn(" ** Inserting Notice after ",after)
+            logfn(" Book will be written to ", outfolder)
+            db.insert(1, notice_file, notice_durn)
+            db.copyto(outfolder)
 
     
 
