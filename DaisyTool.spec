@@ -3,8 +3,8 @@
 block_cipher = None
 
 
-a = Analysis(['main.py'],
-             pathex=['H:\\Projects\\Saksham-DaisyBooks'],
+a = Analysis(['main.py','convert.py','daisy.py'],
+             #pathex=['H:\\Projects\\Saksham-DaisyBooks'],
              binaries=None,
              datas=[("daisy.ico", '.')],
              hiddenimports=[],

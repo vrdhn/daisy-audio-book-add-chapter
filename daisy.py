@@ -1,3 +1,7 @@
+##
+## daisy-tools  (C) Vardhan Varma <vardhanvarma@gmail.com>
+##  LICENSE:  GPL3
+##
 
 
 

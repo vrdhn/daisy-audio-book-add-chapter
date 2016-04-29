@@ -1,6 +1,6 @@
 
 ##
-## daisy-audio-book-tools  (C) Vardhan Varma <vardhanvarma@gmail.com>
+## daisy-tools  (C) Vardhan Varma <vardhanvarma@gmail.com>
 ##  LICENSE:  GPL3
 ##
 
@@ -11,10 +11,16 @@ import tkFileDialog
 import tkFont
 #from ttk import *
 import json
+import traceback
+
+import time
 
 from convert import convert
 
-config_file = os.path.expanduser("~/.daisytool.json")
+config_file = os.path.abspath(os.path.expanduser("~/.daisytool.json"))
+outlog_file = os.path.abspath(os.path.expanduser("~/daisytool.log"))
+
+
     
 path_prefix = sys._MEIPASS if getattr(sys, 'frozen', False) else "."
 
@@ -25,11 +31,14 @@ This tool adds a notice after first section"""
 
 class Application(Frame):
     def __init__(self, master = None):
+        self.logfile = open(outlog_file,"w")
         Frame.__init__(self,master)
 
         self.createWidgets()
         self.grid()
-        #self.pack(fill=both, expand=True)
+        self.log("Session starting " , time.asctime())
+        self.log("Logfile saved at ", outlog_file)
+
         
 
     def createWidgets(self):
@@ -38,7 +47,6 @@ class Application(Frame):
             self.config = json.load(open(config_file))
         except:
             self.config = json.loads('{ "lru": [] }')
-        print self.config
         self.inputVar = StringVar()
         self.outputVar = StringVar()
         self.noticeVar = StringVar()
@@ -59,7 +67,7 @@ class Application(Frame):
         ####
         r  = r +  1
         self.inputLabel = Label(self, text = "Input Folder")
-        self.inputEntry = Entry(self,width=50,textvariable=self.inputVar)
+        self.inputEntry = Entry(self,width=80,textvariable=self.inputVar)
         self.inputButton = Button(self, text = "Select",command=self.btnInput)
         self.inputLabel.grid(row=r,column=0,sticky=E,pady=2)
         self.inputEntry.grid(row=r,column=1,columnspan=3,padx=3)
@@ -67,7 +75,7 @@ class Application(Frame):
         #####
         r = r + 1        
         self.outputLabel = Label(self, text = "Output Folder")
-        self.outputEntry = Entry(self,width=50,textvariable=self.outputVar)
+        self.outputEntry = Entry(self,width=80,textvariable=self.outputVar)
         self.outputButton = Button(self, text = "Select",command=self.btnOutput)
         self.outputLabel.grid(row=r,column=0,padx=3,sticky=E,pady=2)
         self.outputEntry.grid(row=r,column=1,columnspan=3,padx=3)
@@ -75,7 +83,7 @@ class Application(Frame):
         #####
         r = r + 1        
         self.noticeLabel = Label(self, text = "Notice File")
-        self.noticeEntry = Entry(self,width=50,textvariable=self.noticeVar)
+        self.noticeEntry = Entry(self,width=80,textvariable=self.noticeVar)
         self.noticeButton = Button(self, text = "Select",command=self.btnNotice)
         self.noticeLabel.grid(row=r,column=0,padx=3,sticky=E,pady=2)
         self.noticeEntry.grid(row=r,column=1,columnspan=3,padx=3)
@@ -84,7 +92,7 @@ class Application(Frame):
         r = r + 1        
         self.durnLabel = Label(self, text = "Duration ( seconds) ")
         self.durnEntry = Entry(self,width=10,textvariable=self.durnVar)
-        self.durnLabel.grid(row=r,column=0,padx=3,sticky=W,pady=2)
+        self.durnLabel.grid(row=r,column=0,padx=3,sticky=E,pady=2)
         self.durnEntry.grid(row=r,column=1,padx=3,sticky=W)
         #####
         r  = r + 1
@@ -96,7 +104,7 @@ class Application(Frame):
         self.showOutput.grid(row=r,column=0,sticky=W,columnspan=3,padx=3)
         #####
         r  = r + 1
-        self.showOutput = Text(self,width=120)
+        self.showOutput = Text(self,width=80)
         self.showOutput.grid(row=r,column=0,columnspan=5,padx=3,pady=3)
         #####
         r  = r + 1
@@ -130,8 +138,11 @@ class Application(Frame):
     def log(self,*x):
         o = self.showOutput
         o.config(state=NORMAL)
-        o.insert(END,' '.join([str(y) for y in x])+'\n')
+        res = ' '.join([str(y) for y in x])+'\n'
+        o.insert(END,res)
         o.config(state="disable")
+        self.logfile.write(res)
+        self.logfile.flush()
 
     def start(self):
         o = self.log
@@ -145,20 +156,30 @@ class Application(Frame):
         o("  Output Directory : ",ov)
         o("  Notice MP3 File  : ",nv)
         o("  Notice Duration  : ",dv)        
-
-        ok = convert( input_dir = iv,
-                      output_dir = ov,
-                      notice_file = nv,
-                      notice_durn = dv,
-                      logfn = o)
-        if ok :
-            ## Save before exiting..
-            self.config["lru"].insert(0,{ "input":    iv,
-                                          "output":   ov,
-                                          "notice":   nv,
-                                          "duration": dv})
-            with open(config_file, 'w') as outfile:
-                json.dump(self.config, outfile)
+        try:
+            ok = convert( input_dir = iv,
+                          output_dir = ov,
+                          notice_file = nv,
+                          notice_durn = dv,
+                          logfn = o)
+            if ok :
+                ## Save before exiting..
+                self.config["lru"].insert(0,{ "input":    iv,
+                                              "output":   ov,
+                                              "notice":   nv,
+                                              "duration": dv})
+                with open(config_file, 'w') as outfile:
+                    json.dump(self.config, outfile)
+        except:
+            o("**********************************************************")
+            o(" AN INTERNAL ERROR HAS OCCURED ")
+            o(" Please send content of this buffer to fix this issue")
+            o(" Visit http://github.com/vrdhn/daisy-tool to submit issue")
+            o(" Or email author at vardhanvarma@gmail.com with the file")
+            o(" Logfile is saved at", outlog_file)
+            o("**********************************************************")
+            o(traceback.format_exc())
+            o("**********************************************************")
         
 
         
