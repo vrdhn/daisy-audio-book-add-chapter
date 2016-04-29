@@ -52,7 +52,7 @@ siml_templ = """<?xml version="1.0" encoding="utf-8"?>
 	<body>
 		<seq dur="{dur}s">
 			<par endsync="last" id="par_notice">
-				<text src="ncc.html#h1_notice" id="txt_notice"/>
+				<text src="ncc.html#h1_notice" id="text_notice"/>
 				<seq>
 					<audio src="{mp3}" clip-begin="npt=0.000s" clip-end="npt={dur}s" id="aud_notice"/>
 				</seq>

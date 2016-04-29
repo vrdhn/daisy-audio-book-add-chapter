@@ -187,7 +187,9 @@ def convert( input_dir ,
             db.dump()
             after = db.get_smil(0)
             title = db.title()
-            outfolder = os.path.join(output_dir,title.replace(' ','-'))
+            #outfolder = os.path.join(output_dir,title.replace(' ','-'))
+            outfolder = os.path.join(output_dir,
+                                     os.path.basename(root))
             logfn("-----------------------------------------------")
             logfn(" Found book: ",title)
             logfn(" ** Inserting Notice after ",after)
