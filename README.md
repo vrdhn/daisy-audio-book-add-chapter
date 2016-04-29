@@ -2,6 +2,9 @@
 
 Tool to insert a Notice to a Daisy talking book
 
+# Download
+The latest executable is at https://www.dropbox.com/s/ckkkx699x932dfk/DaisyTool.exe?dl=0
+
 # Usage
 
   Asks for following inputs:
