@@ -168,7 +168,8 @@ class DaisyBook:
         outfile = os.path.join(self.outfolder, 'master.smil')
         self.log( '     => ',outfile)        
         with  open(outfile,'w') as of:
-            dom.writexml(of)
+            of.write(dom.toxml(encoding='utf-8'))
+            #dom.writexml(of,encoding='utf-8')
         ## now for the ncc.htm
         dom = xml.dom.minidom.parse(self.f("ncc.html"))
         ## time in this smil
@@ -199,7 +200,8 @@ class DaisyBook:
         outfile = os.path.join(self.outfolder, 'ncc.html')
         self.log( '     => ',outfile)        
         with  open(outfile,'w') as of:
-            dom.writexml(of)
+            of.write(dom.toxml(encoding='utf-8'))
+            #dom.writexml(of,encoding='utf-8')
         ## writeout the notice.smil
         outfile = os.path.join(self.outfolder, 'notice.smil')
         self.log( '     => ',outfile)        
@@ -230,7 +232,8 @@ class DaisyBook:
         outfile = os.path.join(self.outfolder, self.smil_refs[idx][0])
         self.log( '     => ',outfile)        
         with  open(outfile,'w') as of:
-            dom.writexml(of)
+            of.write(dom.toxml(encoding='utf-8'))
+            #dom.writexml(of,encoding='utf-8')
 
         for au in dom.documentElement.getElementsByTagName('audio'):
             mp3s.add( au.getAttribute('src'))

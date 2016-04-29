@@ -138,10 +138,10 @@ class Application(Frame):
     def log(self,*x):
         o = self.showOutput
         o.config(state=NORMAL)
-        res = ' '.join([str(y) for y in x])+'\n'
+        res = ' '.join([unicode(y) for y in x])+'\n'
         o.insert(END,res)
         o.config(state="disable")
-        self.logfile.write(res)
+        self.logfile.write(res.encode('utf-8'))
         self.logfile.flush()
 
     def start(self):
