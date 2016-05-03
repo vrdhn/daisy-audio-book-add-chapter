@@ -11,7 +11,6 @@ import tkFileDialog
 import tkFont
 #from ttk import *
 import json
-import traceback
 
 import time
 
@@ -163,24 +162,11 @@ class Application(Frame):
         with open(config_file, 'w') as outfile:
             json.dump(self.config, outfile)
             
-        try:
-            ok = convert( input_dir = iv,
-                          output_dir = ov,
-                          notice_file = nv,
-                          notice_durn = dv,
-                          logfn = o)
-            if ok :
-                pass
-        except:
-            o("**********************************************************")
-            o(" AN INTERNAL ERROR HAS OCCURED ")
-            o(" Please send content of this buffer to fix this issue")
-            o(" Visit http://github.com/vrdhn/daisy-tool to submit issue")
-            o(" Or email author at vardhanvarma@gmail.com with the file")
-            o(" Logfile is saved at", outlog_file)
-            o("**********************************************************")
-            o(traceback.format_exc())
-            o("**********************************************************")
+        ok = convert( input_dir = iv,
+                      output_dir = ov,
+                      notice_file = nv,
+                      notice_durn = dv,
+                      logfn = o)
         
 
         

@@ -18,6 +18,7 @@ from xml.sax import make_parser
 import sys
 from  xml.sax.saxutils import escape, quoteattr
 import zipfile
+import traceback
 
 from daisy import DaisyBook
 
@@ -181,27 +182,38 @@ def convert( input_dir ,
     notice_file = os.path.abspath(notice_file)
     notice_durn = float(notice_durn)
     for root, dir, files in os.walk(input_dir):
-        logfn("Checking ",root)
-        db = DaisyBook(logfn,root)
-        if db.is_valid():
-            db.dump()
-            after = db.get_smil(0)
-            title = db.title()
-            #outfolder = os.path.join(output_dir,title.replace(' ','-'))
-            outfolder = os.path.join(output_dir,
-                                     os.path.basename(root))
-            logfn("-----------------------------------------------")
-            logfn(" Found book: ",title)
-            logfn(" ** Inserting Notice after ",after)
-            logfn(" Book will be written to ", outfolder)
-            db.insert(1, notice_file, notice_durn)
-            db.copyto(outfolder)
-            dbc = DaisyBook(logfn,outfolder)
+        try:
             logfn("Checking ",root)
-            if not dbc.is_valid():
-                logfn('  ***** FAILED *****')
-            dbc.dump()
-            logfn('And we are done with this ...')
+            db = DaisyBook(logfn,root)
+            if db.is_valid():
+                db.dump()
+                after = db.get_smil(0)
+                title = db.title()
+                #outfolder = os.path.join(output_dir,title.replace(' ','-'))
+                outfolder = os.path.join(output_dir,
+                                         os.path.basename(root))
+                logfn("-----------------------------------------------")
+                logfn(" Found book: ",title)
+                logfn(" ** Inserting Notice after ",after)
+                logfn(" Book will be written to ", outfolder)
+                db.insert(1, notice_file, notice_durn)
+                db.copyto(outfolder)
+                dbc = DaisyBook(logfn,outfolder)
+                logfn("Checking ",root)
+                if not dbc.is_valid():
+                    logfn('  ***** FAILED *****')
+                    dbc.dump()
+        except:
+            logfn("**********************************************************")
+            logfn(" AN INTERNAL ERROR HAS OCCURED ")
+            logfn(" Please send content of this buffer to fix this issue")
+            logfn(" Visit http://github.com/vrdhn/daisy-tool to submit issue")
+            logfn(" Or email author at vardhanvarma@gmail.com with the file")
+            logfn("**********************************************************")
+            logfn(traceback.format_exc())
+            logfn("**********************************************************")
+        logfn('And we are done with this ...')
+            
     return True
 
         
