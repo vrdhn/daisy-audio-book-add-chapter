@@ -155,7 +155,14 @@ class Application(Frame):
         o("  Input Directory  : ",iv)
         o("  Output Directory : ",ov)
         o("  Notice MP3 File  : ",nv)
-        o("  Notice Duration  : ",dv)        
+        o("  Notice Duration  : ",dv)
+        self.config["lru"].insert(0,{ "input":    iv,
+                                      "output":   ov,
+                                      "notice":   nv,
+                                      "duration": dv})
+        with open(config_file, 'w') as outfile:
+            json.dump(self.config, outfile)
+            
         try:
             ok = convert( input_dir = iv,
                           output_dir = ov,
@@ -163,13 +170,7 @@ class Application(Frame):
                           notice_durn = dv,
                           logfn = o)
             if ok :
-                ## Save before exiting..
-                self.config["lru"].insert(0,{ "input":    iv,
-                                              "output":   ov,
-                                              "notice":   nv,
-                                              "duration": dv})
-                with open(config_file, 'w') as outfile:
-                    json.dump(self.config, outfile)
+                pass
         except:
             o("**********************************************************")
             o(" AN INTERNAL ERROR HAS OCCURED ")
