@@ -7,6 +7,7 @@
 
 import os
 import xml.dom.minidom
+from xml.dom.minidom import Node
 from  shutil import copyfile
 import math
 
@@ -143,6 +144,7 @@ class DaisyBook:
         time_of_first = self.copyto_smil(0,0,mp3s)
         for x in range(1,len(self.smil_refs)):
             self.copyto_smil(x,self.todo[2],mp3s)
+        mp3s=[]
         for mp3 in sorted(mp3s):
             outfile =  os.path.join(self.outfolder,mp3)
             self.log( '     => ',outfile)                    
@@ -184,8 +186,21 @@ class DaisyBook:
         et_node = self.dom_search(dom,'meta', 'name', 'ncc:files')
         et_new = str(int( et_node.getAttribute('content')) + 2)
         et_node.setAttribute('content', et_new)
-        ## add h1 after first h1
-        ref = dom.documentElement.getElementsByTagName('h1')[1]
+        ## find first class=section element.
+        topnodes = [ s
+                     for s in dom.documentElement.getElementsByTagName('body')[0].childNodes
+                     if  s.nodeType == Node.ELEMENT_NODE ]
+
+        ## first section !!
+        refs = [ s  for s in topnodes if s.getAttribute('class').lower() == 'section']
+        if len(refs) == 0 :
+            ## second h* ...
+            refs = [ s for s in topnodes if s.tagName[0] == 'h' ]
+            if len (refs) > 2:
+                refs = refs[1:]
+        if len(refs) < 0:
+            self.log("Can't find place to insert in the ncc.html file")
+        #
         par = ref.parentNode
         ref1 = ref.nextSibling
         cp = ref.cloneNode(True)
