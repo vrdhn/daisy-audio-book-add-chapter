@@ -12,23 +12,21 @@ from  shutil import copyfile
 import math
 
 def s2hms(sf):
-    """ 100 ==> 00:01:40"""
+    """ 100.123456 ==> 00:01:40.123456"""
     f,s = math.modf(float(sf))
     a = s % 60
     s = s / 60
     b = s % 60
     s = s / 60
-    return  "%.2d:%.2d:%.2d"%(s,b,a)
+    ## defaults to 6 decimal digits
+    ms = ("%.8f" % f).strip('0')
+    if ms == '.':
+        return  "%.2d:%.2d:%.2d"%(s,b,a)
+    else:
+        return  "%.2d:%.2d:%.2d%s"%(s,b,a,ms)
+        
 
-
-def s2hmsf(sf):
-    """ 100 ==> 00:01:40"""
-    f,s = math.modf(float(sf))
-    a = s % 60
-    s = s / 60
-    b = s % 60
-    s = s / 60
-    return "%.2d:%.2d:%.2d.%d"%(s,b,a,int(f*1000.0))
+s2hmsf = s2hms
              
 
 def hms2s(hms):
@@ -144,7 +142,6 @@ class DaisyBook:
         time_of_first = self.copyto_smil(0,0,mp3s)
         for x in range(1,len(self.smil_refs)):
             self.copyto_smil(x,self.todo[2],mp3s)
-        mp3s=[]
         for mp3 in sorted(mp3s):
             outfile =  os.path.join(self.outfolder,mp3)
             self.log( '     => ',outfile)                    
