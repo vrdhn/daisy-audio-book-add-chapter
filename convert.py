@@ -202,7 +202,7 @@ def convert( input_dir ,
                 logfn("Checking ",root)
                 if not dbc.is_valid():
                     logfn('  ***** FAILED *****')
-                    dbc.dump()
+                dbc.dump()
         except:
             logfn("**********************************************************")
             logfn(" AN INTERNAL ERROR HAS OCCURED ")

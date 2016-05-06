@@ -131,7 +131,8 @@ class DaisyBook:
         if len(ret) != 1:
             self.log("###ERROR dom_search:",tag,main_attrval,main_attrval,str(node))
         return ret[0]
-        
+
+    ## TODO: break this into multiple functions 
     def copyto(self,outfolder):
         self.outfolder = outfolder
         if not os.path.exists(outfolder):
@@ -142,6 +143,7 @@ class DaisyBook:
         time_of_first = self.copyto_smil(0,0,mp3s)
         for x in range(1,len(self.smil_refs)):
             self.copyto_smil(x,self.todo[2],mp3s)
+        mp3s=[]
         for mp3 in sorted(mp3s):
             outfile =  os.path.join(self.outfolder,mp3)
             self.log( '     => ',outfile)                    
@@ -196,8 +198,8 @@ class DaisyBook:
             if len (refs) > 2:
                 refs = refs[1:]
         if len(refs) < 0:
-            self.log("Can't find place to insert in the ncc.html file")
-        #
+            raise ValueError("Can't find insertion point in TOC in ncc.html")
+        ref = refs[0]
         par = ref.parentNode
         ref1 = ref.nextSibling
         cp = ref.cloneNode(True)
