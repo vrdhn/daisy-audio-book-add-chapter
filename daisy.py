@@ -143,7 +143,6 @@ class DaisyBook:
         time_of_first = self.copyto_smil(0,0,mp3s)
         for x in range(1,len(self.smil_refs)):
             self.copyto_smil(x,self.todo[2],mp3s)
-        mp3s=[]
         for mp3 in sorted(mp3s):
             outfile =  os.path.join(self.outfolder,mp3)
             self.log( '     => ',outfile)                    
