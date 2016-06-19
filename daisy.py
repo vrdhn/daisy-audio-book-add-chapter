@@ -129,8 +129,10 @@ class DaisyBook:
             if node.getAttribute(main_attr) == main_attrval:
                 ret.append( node)
         if len(ret) != 1:
-            self.log("###ERROR dom_search:",tag,main_attrval,main_attrval,str(node))
-        return ret[0]
+            self.log("\n###WARNING DOM not found:",tag,main_attrval,main_attrval,str(node))
+            return None
+        else:
+            return ret[0]
 
     ## TODO: break this into multiple functions 
     def copyto(self,outfolder):
@@ -182,8 +184,9 @@ class DaisyBook:
         et_node.setAttribute('content', et_new)        
         ## files
         et_node = self.dom_search(dom,'meta', 'name', 'ncc:files')
-        et_new = str(int( et_node.getAttribute('content')) + 2)
-        et_node.setAttribute('content', et_new)
+        if et_node:
+            et_new = str(int( et_node.getAttribute('content')) + 2)
+            et_node.setAttribute('content', et_new)
         ## find first class=section element.
         topnodes = [ s
                      for s in dom.documentElement.getElementsByTagName('body')[0].childNodes
