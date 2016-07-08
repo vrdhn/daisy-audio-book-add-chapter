@@ -77,19 +77,26 @@ class DaisyBook:
 
     def is_valid(self):
         return self.valid
+
     def f(self,x):
         return os.path.join(self.folder,x)
+
+    def rmid(self,x):
+        """ Remove if from a filename foo#id , if present """
+        return x.rsplit('#',1)[0]
 
     def parse(self):
         #self.log('Parsing ' , self.f("master.smil"))
         DOMTree = xml.dom.minidom.parse(self.f("master.smil"))
         self.smil_master = { meta.getAttribute('name') : meta.getAttribute('content') 
                            for meta in DOMTree.documentElement.getElementsByTagName('meta') }        
-        self.smil_refs = [  [ ref.getAttribute('src'), ref.getAttribute('title') , self.parse_smil(ref.getAttribute('src')) ]
+        self.smil_refs = [  [ self.rmid(ref.getAttribute('src')),
+                              ref.getAttribute('title') ,
+                              self.parse_smil(self.rmid(ref.getAttribute('src'))) ]
                             for ref in DOMTree.documentElement.getElementsByTagName('ref') ]
 
     def parse_smil(self,smil):
-        #self.log('Parsing ' , self.f(smil))        
+        #self.log('Parsing ' , self.f(smil))
         dom = xml.dom.minidom.parse(self.f(smil))
         ret = {}
         ret["meta"] = {  meta.getAttribute('name') : meta.getAttribute('content') 
